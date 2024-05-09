@@ -1,19 +1,24 @@
-traefik:
-# The official v2 Traefik docker image
-  image: traefik:v2.10
-  #container-name: traefik
-  ports:
-    # The HTTP port
-    - "80:80"
-    - "443:443"
-    # The Web UI (enabled by --api.insecure=true)
-    - "8080:8080"
-  volumes:
-    - ./config/traefik.yml:/etc/traefik/traefik.yml:ro
-      # - /etc/letsencrypt/live/witchessabath:/etc/traefik/certs
-    - /var/run/docker.sock:/var/run/docker.sock:ro
-    - ./config/certs/:/etc/traefik/certs/
-    - ./config/conf/:/etc/traefik/conf/
-  networks:
-    - traefik
-  restart: unless-stopped
+#networks:
+# traefik:
+#   external: true
+services:
+  traefik:
+    container_name: traefik
+    image: traefik:v2.10
+    ports:
+      - "80:80"
+      - "443:443"
+      # The Web UI (enabled by --api.insecure=true)
+      - "8080:8080"
+    volumes:
+      - ./conf/traefik.yml:/etc/traefik/traefik.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./certs/:/etc/traefik/certs/
+      - ./conf/dynamic.yml:/etc/traefik/dynamic.yaml
+      #  - ./config/conf/:/etc/traefik/conf/
+    environment:
+      - "CLOUDFLARE_EMAIL=lily.sabath@nachlesen.com"
+      - "CLOUDFLARE_API_KEY=c1702d05e38651bf8d68466fec870ff879e55"
+        #   networks:
+        #- traefik
+    restart: unless-stopped
