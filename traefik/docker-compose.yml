@@ -1,3 +1,6 @@
+#networks:
+# traefik:
+#   external: true
 services:
   traefik:
     container_name: traefik
@@ -11,7 +14,41 @@ services:
       - ./conf/traefik.yml:/etc/traefik/traefik.yml:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./certs/:/etc/traefik/certs/
+      - ./conf/dynamic.yml:/etc/traefik/dynamic.yaml
+    labels:
+      - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
+      - "traefik.http.routers.http-catchall.entrypoints=web"
+      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
     environment:
-      - "CLOUDFLARE_EMAIL=xxx"
-      - "CLOUDFLARE_API_KEY=xxx"
-    restart: unless-stopped
+      - "CLOUDFLARE_EMAIL=lily.sabath@nachlesen.com"
+      - "CLOUDFLARE_API_KEY=c1702d05e38651bf8d68466fec870ff879e55"
+    restart: always
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    command: -H unix:///var/run/docker.sock
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    labels:
+      # Frontend
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`portainer.witchessabath.com`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.services.frontend.loadbalancer.server.port=9000"
+      - "traefik.http.routers.frontend.service=frontend"
+      - "traefik.http.routers.frontend.tls.certresolver=leresolver"
+
+      # Edge
+      - "traefik.http.routers.edge.rule=Host(`edge.witchessabath.com`)"
+      - "traefik.http.routers.edge.entrypoints=websecure"
+      - "traefik.http.services.edge.loadbalancer.server.port=8000"
+      - "traefik.http.routers.edge.service=edge"
+      - "traefik.http.routers.edge.tls.certresolver=leresolver"
+
+
+volumes:
+  portainer_data:
+    
