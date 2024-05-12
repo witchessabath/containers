@@ -1,6 +1,3 @@
-#networks:
-# traefik:
-#   external: true
 services:
   traefik:
     container_name: traefik
@@ -14,11 +11,7 @@ services:
       - ./conf/traefik.yml:/etc/traefik/traefik.yml:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./certs/:/etc/traefik/certs/
-      - ./conf/dynamic.yml:/etc/traefik/dynamic.yaml
-      #  - ./config/conf/:/etc/traefik/conf/
     environment:
-      - "CLOUDFLARE_EMAIL=lily.sabath@nachlesen.com"
-      - "CLOUDFLARE_API_KEY=c1702d05e38651bf8d68466fec870ff879e55"
-        #   networks:
-        #- traefik
+      - "CLOUDFLARE_EMAIL=xxx"
+      - "CLOUDFLARE_API_KEY=xxx"
     restart: unless-stopped
