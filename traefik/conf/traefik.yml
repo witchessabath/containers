@@ -33,14 +33,31 @@ certificatesResolvers:
           - "1.1.1.1:53"
           - "9.9.9.9:53"
 
+http:
+  middlewares:
+    https-redirect:
+      redirectScheme:
+        scheme: https
+  routers:
+    http-catchall:
+      entryPoints:
+        - http
+      middlewares:
+        - https-redirect
+      rule: "HostRegexp(`{host:.+}`)"
+      service: noop
+  services:
+    noop:
+      loadBalancer:
+        servers:
+          - url: "http://127.0.0.1"
+
 providers:
   docker:
+    endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
     watch: true
     swarmMode: false
-  file:
-    filename: "/etc/traefik/dynamic.yml"
-    watch: true
 
 tls:
   options:
