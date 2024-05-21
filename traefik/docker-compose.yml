@@ -21,8 +21,8 @@ services:
       - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
     environment:
-      - "CLOUDFLARE_EMAIL=lily.sabath@nachlesen.com"
-      - "CLOUDFLARE_API_KEY=59d9b2b49abe2b8ba3cc0325dfa0f8eecd13d"
+      - "CLOUDFLARE_EMAIL=xxx"
+      - "CLOUDFLARE_API_KEY=xxx"
     restart: always
 
   portainer:
